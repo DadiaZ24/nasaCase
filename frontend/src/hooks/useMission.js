@@ -22,13 +22,13 @@ export const useMission = () => {
     try {
       setLoading(true);
       const [missionRes, systemsRes, crewRes, alertsRes, energyRes, weatherRes, logRes] = await Promise.all([
-        api.getMission().catch(() => null),
-        api.getSystems().catch(() => []),
-        api.getCrew().catch(() => []),
-        api.getAlerts().catch(() => []),
-        api.getEnergy().catch(() => []),
-        api.getWeather().catch(() => null),
-        api.getLog().catch(() => []),
+        api.getMission(),
+        api.getSystems(),
+        api.getCrew(),
+        api.getAlerts(),
+        api.getEnergy(),
+        api.getWeather(),
+        api.getLog(),
       ]);
       setMission(missionRes);
       setSystems(systemsRes);
