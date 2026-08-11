@@ -28,7 +28,6 @@ Construído como projeto educativo para um workshop de AI e Programação, o das
 | Frontend | React 18, Vite, Recharts, Socket.IO Client, Lucide Icons |
 | Backend | Node.js 20, Express.js, Socket.IO, node-cron |
 | Base de Dados | PostgreSQL 16 (Prisma ORM) |
-| Cache | Redis 7 |
 | Containerização | Docker, Docker Compose |
 | Reverse Proxy | Nginx (produção) |
 
