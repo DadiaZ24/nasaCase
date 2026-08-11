@@ -1,5 +1,8 @@
 import express from 'express';
 import http from 'http';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -46,6 +49,22 @@ app.use('/api/energy', energyRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use('/api/log', logRoutes);
 app.use('/api/simulation', simulationRoutes);
+
+// Frontend estático (build do Vite copiado para ./public pelo Dockerfile).
+// Em desenvolvimento local a pasta não existe e o Vite serve o frontend na 5173,
+// por isso este bloco é simplesmente ignorado.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.join(__dirname, 'public');
+
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+
+  // Fallback da SPA: qualquer rota não-API devolve o index.html
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) return next();
+    res.sendFile(path.join(publicDir, 'index.html'));
+  });
+}
 
 app.use(errorHandler);
 

@@ -28,66 +28,101 @@ Construído como projeto educativo para um workshop de AI e Programação, o das
 | Frontend | React 18, Vite, Recharts, Socket.IO Client, Lucide Icons |
 | Backend | Node.js 20, Express.js, Socket.IO, node-cron |
 | Base de Dados | PostgreSQL 16 (Prisma ORM) |
-| Containerização | Docker, Docker Compose |
-| Reverse Proxy | Nginx (produção) |
+| Containerização | Docker (imagem única) |
 
 ## 📦 Pré-requisitos
 
 - [Docker](https://www.docker.com/get-started) (v20+)
-- [Docker Compose](https://docs.docker.com/compose/) (v2+)
 
 ## 🚀 Instalação e Execução
+
+Toda a aplicação — PostgreSQL, API e frontend — corre num **único container**.
 
 ```bash
 # 1. Clonar o repositório
 git clone <repo-url>
 cd nasa-mission-control
 
-# 2. Copiar variáveis de ambiente
-cp .env.example .env
+# 2. Construir a imagem
+docker build -t nasa-mission-control .
 
-# 3. Construir e iniciar todos os serviços
-docker compose up --build
+# 3. Arrancar
+docker run -d --name nasa \
+  -p 3001:3001 \
+  -v nasa_data:/var/lib/postgresql/data \
+  nasa-mission-control
 
 # 4. Abrir no browser
-# Frontend: http://localhost:5173
-# API:      http://localhost:3001/api/mission
+# Dashboard: http://localhost:3001
+# API:       http://localhost:3001/api/mission
 ```
 
-Para parar:
+O arranque inicializa a base de dados, aplica as migrações e semeia os dados
+automaticamente. A primeira vez demora alguns segundos — acompanha com
+`docker logs -f nasa`.
+
+Para parar e voltar a arrancar (os dados persistem no volume `nasa_data`):
 ```bash
-docker compose down
+docker stop nasa
+docker start nasa
 ```
 
-Para parar e apagar dados:
+Para remover o container:
 ```bash
-docker compose down -v
+docker rm -f nasa
+```
+
+Para apagar também os dados da missão:
+```bash
+docker volume rm nasa_data
+```
+
+### ⚙️ Opções
+
+| Variável / Flag | Efeito |
+|---|---|
+| `-e SEED_ON_START=true` | Repõe os dados iniciais da missão em cada arranque |
+| `-e PORT=8080` | Muda a porta interna da aplicação |
+| `-p 8080:3001` | Publica noutra porta do host (ver nota abaixo) |
+| `--build-arg VITE_API_URL=...` | Define o URL da API embebido no frontend (build) |
+
+> **Nota:** o frontend é compilado com o URL da API a apontar para
+> `http://localhost:3001`. Se publicares noutra porta ou noutro host, tens de
+> reconstruir a imagem com o URL correto:
+> ```bash
+> docker build --build-arg VITE_API_URL=http://localhost:8080 \
+>              --build-arg VITE_WS_URL=http://localhost:8080 \
+>              -t nasa-mission-control .
+> ```
+
+### 🔄 Repor a base de dados
+
+```bash
+docker exec nasa npx prisma db seed
 ```
 
 ## 📁 Estrutura do Projeto
 
 ```
 nasa-mission-control/
-├── docker-compose.yml
+├── Dockerfile             ← imagem única (Postgres + API + frontend)
+├── docker-entrypoint.sh   ← arranque: BD → migrações → seed → servidor
 ├── .env / .env.example
-├── frontend/          ← React + Vite
-│   ├── Dockerfile
+├── frontend/          ← React + Vite (compilado para estático)
 │   ├── src/
 │   │   ├── components/   (Layout, MissionOverview, SystemStatus, Crew, Alerts, Energy, Weather, Common)
 │   │   ├── hooks/        (useSocket, useMission, useAlerts)
 │   │   ├── services/     (api.js, socket.js)
 │   │   └── context/      (ThemeContext)
 │   └── public/
-├── backend/           ← Node.js + Express
-│   ├── Dockerfile
-│   ├── prisma/        (schema + seed)
-│   └── src/
-│       ├── routes/
-│       ├── controllers/
-│       ├── services/     (simulationService, decisionService)
-│       ├── sockets/
-│       └── middleware/
-└── nginx/             ← Reverse Proxy (produção)
+└── backend/           ← Node.js + Express (serve a API e o frontend)
+    ├── prisma/        (schema + seed)
+    └── src/
+        ├── routes/
+        ├── controllers/
+        ├── services/     (simulationService, decisionService)
+        ├── sockets/
+        └── middleware/
 ```
 
 ## 🔌 API Endpoints
