@@ -6,6 +6,7 @@ import CrewPanel from '../Crew/CrewPanel';
 import AlertsPanel from '../Alerts/AlertsPanel';
 import EnergyChart from '../Energy/EnergyChart';
 import SpaceWeather from '../Weather/SpaceWeather';
+import MissionTerminal from '../Logs/MissionTerminal';
 
 const MainContent = (props) => {
   const { mission, systems, crew, alerts, energy, weather, log, loading, error, refetch } = props;
@@ -24,7 +25,7 @@ const MainContent = (props) => {
     return (
       <main className="main-content" style={{ display: 'flex', flexColum: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: 'var(--accent-red)', fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: '16px' }}>
-          FALHA DE COMUNICAÇÃO
+          FALHA DE COMUNICAÇÃO: {error}
         </div>
         <button onClick={refetch} style={{ padding: '8px 16px', background: 'var(--bg-secondary)', border: '1px solid var(--accent-red)', color: 'var(--text-primary)', cursor: 'pointer' }}>TENTAR NOVAMENTE</button>
       </main>
@@ -53,6 +54,7 @@ const MainContent = (props) => {
           <SpaceWeather weather={weather} />
         </div>
       </div>
+      <MissionTerminal logs={log} />
     </main>
   );
 };
