@@ -1,0 +1,37 @@
+.travel-progress {
+  margin: 24px 0;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.planet-earth { color: var(--accent-blue); }
+.planet-mars { color: var(--accent-orange); }
+.progress-value { color: var(--accent-cyan); font-weight: bold; }
+
+.progress-track {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+  border-radius: 4px;
+  position: relative;
+}
+
+.ship-icon {
+  position: absolute;
+  right: -12px;
+  top: -8px;
+  color: var(--text-primary);
+  transform: rotate(90deg);
+}

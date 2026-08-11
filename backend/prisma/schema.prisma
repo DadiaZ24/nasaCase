@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Mission {
+  id                Int       @id @default(autoincrement())
+  name              String    @default("ARES-VII")
+  destination       String    @default("Marte (Cratera Jezero)")
+  launchDate        DateTime  @default("2035-03-15T00:00:00Z")
+  estimatedDuration Int       @default(687)
+  currentDay        Int       @default(142)
+  currentPhase      String    @default("Cruzeiro Interplanetário")
+  distanceToEarth   Float     @default(78.3)
+  distanceToMars    Float     @default(143.7)
+  currentSpeed      Float     @default(24800)
+  commDelay         Float     @default(261)
+  totalDistance      Float     @default(222.0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  systems           ShipSystem[]
+  crew              CrewMember[]
+  alerts            Alert[]
+  energyLogs        EnergyLog[]
+  weatherData       SpaceWeather[]
+  missionLog        MissionLogEntry[]
+}
+
+model ShipSystem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    String
+  status      String   @default("normal")
+  level       Float    @default(100)
+  observation String?
+  icon        String?
+  missionId   Int
+  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CrewMember {
+  id           Int      @id @default(autoincrement())
+  name         String
+  role         String
+  healthStatus String   @default("good")
+  sleepHours   Float
+  currentTask  String
+  avatarColor  String   @default("#4A9DFF")
+  missionId    Int
+  mission      Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Alert {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique
+  priority        String
+  description     String
+  recommendedAction String
+  isResolved      Boolean   @default(false)
+  resolvedAt      DateTime?
+  resolvedAction  String?
+  missionId       Int
+  mission         Mission   @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model EnergyLog {
+  id              Int      @id @default(autoincrement())
+  missionDay      Int
+  energyGenerated Float
+  energyConsumed  Float
+  balance         Float
+  missionId       Int
+  mission         Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+}
+
+model SpaceWeather {
+  id                  Int      @id @default(autoincrement())
+  cosmicRadiation     Float    @default(1.2)
+  solarActivity       String   @default("Moderada")
+  micrometeoriteProb  Float    @default(0.003)
+  exteriorTemp        Float    @default(-270.4)
+  solarWind           Float    @default(485)
+  radiationTrend      String   @default("rising")
+  solarActivityTrend  String   @default("rising")
+  meteoriteTrend      String   @default("stable")
+  tempTrend           String   @default("stable")
+  solarWindTrend      String   @default("rising")
+  missionId           Int
+  mission             Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  recordedAt          DateTime @default(now())
+}
+
+model MissionLogEntry {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  type      String
+  message   String
+  source    String
+  missionId Int
+  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+}

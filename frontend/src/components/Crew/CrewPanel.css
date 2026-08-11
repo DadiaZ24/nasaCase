@@ -1,0 +1,62 @@
+.crew-panel h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.crew-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.crew-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-secondary);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.crew-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.commander { background: var(--accent-blue); }
+.engineer { background: var(--accent-orange); }
+.doctor { background: var(--accent-cyan); }
+
+.crew-info {
+  flex: 1;
+}
+
+.crew-info h4 {
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+.crew-info span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.health-bar {
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  margin-top: 6px;
+}
+
+.health-fill {
+  height: 100%;
+  border-radius: 2px;
+}

@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nasa_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nasa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mission_control_2035}
+      POSTGRES_DB: ${POSTGRES_DB:-nasa_mission}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nasa -d nasa_mission"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nasa_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: nasa_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nasa_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nasa_backend
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-nasa}:${POSTGRES_PASSWORD:-mission_control_2035}@postgres:5432/${POSTGRES_DB:-nasa_mission}?schema=public
+      REDIS_URL: redis://redis:6379
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma generate &&
+             npx prisma migrate deploy &&
+             npx prisma db seed &&
+             npm run dev"
+    networks:
+      - nasa_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nasa_frontend
+    environment:
+      VITE_API_URL: http://localhost:3001
+      VITE_WS_URL: http://localhost:3001
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - nasa_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_node_modules:
+  frontend_node_modules:
+
+networks:
+  nasa_network:
+    driver: bridge
