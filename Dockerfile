@@ -50,7 +50,7 @@ ENV NODE_ENV=production \
 
 # Volta a semear a base de dados em cada arranque (apaga o estado da missão).
 # Por omissão o seed só corre na primeira inicialização.
-ENV SEED_ON_START=false
+ENV SEED_ON_START=true
 
 WORKDIR /app
 
