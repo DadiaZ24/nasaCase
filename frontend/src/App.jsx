@@ -6,11 +6,13 @@ import MainContent from './components/Layout/MainContent';
 import ClearanceScreen from './components/Auth/ClearanceScreen';
 import { useMission } from './hooks/useMission';
 import { useTheme } from './context/ThemeContext';
+import { useHash } from './hooks/useHash';
 
 function App() {
   const missionData = useMission();
   const { isDark } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const currentHash = useHash();
 
   // Check for red alert conditions (unresolved High priority alerts)
   const isRedAlert = missionData.alerts?.some(
@@ -30,8 +32,8 @@ function App() {
       {!isAuthenticated && <ClearanceScreen onUnlock={() => setIsAuthenticated(true)} />}
       <Header mission={missionData.mission} />
       <div className="app-body">
-        <Sidebar />
-        <MainContent {...missionData} />
+        <Sidebar activeRoute={currentHash} />
+        <MainContent {...missionData} route={currentHash} />
       </div>
     </div>
   );

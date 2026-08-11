@@ -3,38 +3,38 @@ import { LayoutDashboard, Server, Users, Zap, CloudLightning, Bell, FileText, Pl
 import './Sidebar.css';
 import * as api from '../../services/api';
 
-const Sidebar = () => {
+const Sidebar = ({ activeRoute }) => {
   const handleStartSim = () => api.startSimulation().catch(console.error);
   const handleStopSim = () => api.stopSimulation().catch(console.error);
 
   return (
     <aside className="app-sidebar">
       <nav className="sidebar-nav">
-        <a href="#overview" className="nav-item active">
+        <a href="#overview" className={`nav-item ${activeRoute === '#overview' ? 'active' : ''}`}>
           <LayoutDashboard size={20} />
           <span>Visão Geral</span>
         </a>
-        <a href="#systems" className="nav-item">
+        <a href="#systems" className={`nav-item ${activeRoute === '#systems' ? 'active' : ''}`}>
           <Server size={20} />
           <span>Sistemas</span>
         </a>
-        <a href="#crew" className="nav-item">
+        <a href="#crew" className={`nav-item ${activeRoute === '#crew' ? 'active' : ''}`}>
           <Users size={20} />
           <span>Tripulação</span>
         </a>
-        <a href="#energy" className="nav-item">
+        <a href="#energy" className={`nav-item ${activeRoute === '#energy' ? 'active' : ''}`}>
           <Zap size={20} />
           <span>Energia</span>
         </a>
-        <a href="#weather" className="nav-item">
+        <a href="#weather" className={`nav-item ${activeRoute === '#weather' ? 'active' : ''}`}>
           <CloudLightning size={20} />
           <span>Clima Espacial</span>
         </a>
-        <a href="#alerts" className="nav-item">
+        <a href="#alerts" className={`nav-item ${activeRoute === '#alerts' ? 'active' : ''}`}>
           <Bell size={20} />
           <span>Alertas</span>
         </a>
-        <a href="#log" className="nav-item">
+        <a href="#log" className={`nav-item ${activeRoute === '#log' ? 'active' : ''}`}>
           <FileText size={20} />
           <span>Registro</span>
         </a>

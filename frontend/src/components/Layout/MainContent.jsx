@@ -32,29 +32,77 @@ const MainContent = (props) => {
     );
   }
 
+  const renderView = () => {
+    switch (route) {
+      case '#systems':
+        return (
+          <div className="full-page-view">
+            <SystemStatus systems={systems} />
+          </div>
+        );
+      case '#crew':
+        return (
+          <div className="full-page-view">
+            <CrewPanel crew={crew} />
+          </div>
+        );
+      case '#energy':
+        return (
+          <div className="full-page-view">
+            <EnergyChart energy={energy} />
+          </div>
+        );
+      case '#weather':
+        return (
+          <div className="full-page-view">
+            <SpaceWeather weather={weather} />
+          </div>
+        );
+      case '#alerts':
+        return (
+          <div className="full-page-view">
+            <AlertsPanel alerts={alerts} refetch={refetch} />
+          </div>
+        );
+      case '#log':
+        return (
+          <div className="full-page-view" style={{ height: 'calc(100vh - 120px)' }}>
+            <MissionTerminal logs={log} />
+          </div>
+        );
+      case '#overview':
+      default:
+        return (
+          <>
+            <div className="dashboard-grid">
+              <div className="grid-section section-overview">
+                <MissionOverview mission={mission} />
+              </div>
+              <div className="grid-section section-alerts">
+                <AlertsPanel alerts={alerts} refetch={refetch} />
+              </div>
+              <div className="grid-section section-systems">
+                <SystemStatus systems={systems} />
+              </div>
+              <div className="grid-section section-crew">
+                <CrewPanel crew={crew} />
+              </div>
+              <div className="grid-section section-energy">
+                <EnergyChart energy={energy} />
+              </div>
+              <div className="grid-section section-weather">
+                <SpaceWeather weather={weather} />
+              </div>
+            </div>
+            <MissionTerminal logs={log} />
+          </>
+        );
+    }
+  };
+
   return (
     <main className="main-content">
-      <div className="dashboard-grid">
-        <div className="grid-section section-overview">
-          <MissionOverview mission={mission} />
-        </div>
-        <div className="grid-section section-alerts">
-          <AlertsPanel alerts={alerts} refetch={refetch} />
-        </div>
-        <div className="grid-section section-systems">
-          <SystemStatus systems={systems} />
-        </div>
-        <div className="grid-section section-crew">
-          <CrewPanel crew={crew} />
-        </div>
-        <div className="grid-section section-energy">
-          <EnergyChart energy={energy} />
-        </div>
-        <div className="grid-section section-weather">
-          <SpaceWeather weather={weather} />
-        </div>
-      </div>
-      <MissionTerminal logs={log} />
+      {renderView()}
     </main>
   );
 };
